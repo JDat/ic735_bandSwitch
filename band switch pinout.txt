@@ -1,0 +1,25 @@
+Band switch pinout
+
+Input from tranceiver:
+On panel d9b male
+1. +8V
+2. GND
+3. Transmitting
+4. Band
+5. NC on PCB
+6. NC on PCB
+7. +13.5V
+8. NC on PCB
+9. NC
+
+Output to relays:
+On panel d9b female
+1. Relay 1
+2. Relay 2
+3. Relay 3
+4. Relay 4
+5. Relay 5
+6. Relay 6
+7. Relay 7
+8. +13.5V
+9. NC
