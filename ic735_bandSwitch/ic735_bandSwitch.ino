@@ -1,3 +1,5 @@
+//#define debug
+
 #define tallyPin 9
 
 #define txInPin 10          // TXing from tranceiver
@@ -38,26 +40,48 @@ int rotaryValues[]={rotaryVal0, rotaryVal1, rotaryVal2, rotaryVal3,
                     rotaryVal8, rotaryVal9, rotaryVal10, rotaryVal11};
 
 // ADC values for BAN input
-#define band160     10
-#define band80      10
-#define band40      10
-#define band20      10
-#define band15      10
-#define band10      10
 #define band30      10
-int bandValues[]={band160, band80, band40, band20, band15, band10, band30};
+#define band10      20
+#define band15      30
+#define band20      40
+#define band40      50
+#define band80      60
+#define band160     70
+int bandValues[]={band30, band10, band15, band20, band40, band80, band160};
 
-#define tallyBit 7
+#define relay1    0
+#define relay2    1
+#define relay3    2
+#define relay4    3
+#define relay5    4
+#define relay6    5
+#define relay7    6
+
+#define tallyBit  7
+
+#define nc        255   // no connection nothig used for this band
+
+//This is cruitical
+// in each element need to be relay number, who should be turned on
+//bands assinged in follwing order (numbers ar meters): 30m,10m,15m,20m,40m,80m,160m
+uint8_t bandMatrix[]={nc,nc,relay3,relay2,nc,relay1,nc}; //  for analog band voltage
+
+// each array element represent switch position
+// in each element need to be relay number, who should be turned on
+// element 0 is reserved for auto mode, do not use and leav as nc
+uint8_t rotaryMatrix[]={nc,relay1,relay2,relay3};         // for rotary switch
 
 // macro hack
 #define checkTX() bitWrite( pinByte, tallyBit, (digitalRead(txInPin) ? 0 : 1))
 
 void setup() {
-  
+
+#ifdef debug
   Serial.begin(115200);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
+#endif
 
   //Set pins to output
   for (uint8_t i=0; i<sizeof(pinBitArray); i++){
@@ -70,26 +94,38 @@ void setup() {
 
 void loop() {
   uint8_t a;    // temp variable
-
-  pinByte=0;              // start by releasing arr relay bits
+  uint8_t b;    // temp variable
+  
+  pinByte=0;              // start by releasing all relay bits (all relays off)
+  
   a=readRotary();         // Read rotary switch
-  if ( a>0 && a<255 ) bitWrite( pinByte, a-1, 1);    // If rotary active then set relay
+  if ( a>0 && a<255 ){
+    b=rotaryMatrix[a];
+    if (b<255) {
+        bitWrite( pinByte, b, 1);    // If rotary active then set relay
+    }
+  }
   else {
     a=readBand();
     if (a<255){
-      bitWrite( pinByte,a,1);
+      b=bandMatrix[a];
+      if (b<255) {
+        bitWrite( pinByte,b,1);
+      }
     }
   }
 
   checkTX();              // check for TXing
   setPins();              // Set Relay hardware pins from pinByte variable
-  
+
+#ifdef debug
   //Serial.println(pinByte,BIN);
-  //Serial.println(readRotary());
+  //Serial.println(a);
   //Serial.print(analogRead(rotarySwitchPin));
   //Serial.print("\t");
   //Serial.println(readRotary());
-  //delay(100);
+  delay(100);
+#endif
   
 }
 
@@ -111,6 +147,9 @@ uint8_t readRotary(){
 uint8_t readBand(){
   int a;
   a=analogRead(bandInPin);
+#ifdef debug
+  Serial.println(a);
+#endif  
   for (uint8_t i=0; i<(sizeof(bandValues)/sizeof(bandValues[0]));i++){
     if (a<bandValues[i]) return i;
   }
