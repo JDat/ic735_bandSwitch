@@ -40,13 +40,13 @@ int rotaryValues[]={rotaryVal0, rotaryVal1, rotaryVal2, rotaryVal3,
                     rotaryVal8, rotaryVal9, rotaryVal10, rotaryVal11};
 
 // ADC values for BAN input
-#define band30      10
-#define band10      20
-#define band15      30
-#define band20      40
-#define band40      50
-#define band80      60
-#define band160     70
+#define band30      50
+#define band10      230
+#define band15      340
+#define band20      450
+#define band40      600
+#define band80      750
+#define band160     970
 int bandValues[]={band30, band10, band15, band20, band40, band80, band160};
 
 #define relay1    0
@@ -63,7 +63,8 @@ int bandValues[]={band30, band10, band15, band20, band40, band80, band160};
 
 //This is cruitical
 // in each element need to be relay number, who should be turned on
-//bands assinged in follwing order (numbers ar meters): 30m,10m,15m,20m,40m,80m,160m
+//bands assinged in follwing order (numbers ar meters):
+//                   30m,10m,  15m,  20m,40m,  80m,160m
 uint8_t bandMatrix[]={nc,nc,relay3,relay2,nc,relay1,nc}; //  for analog band voltage
 
 // each array element represent switch position
@@ -124,6 +125,7 @@ void loop() {
   //Serial.print(analogRead(rotarySwitchPin));
   //Serial.print("\t");
   //Serial.println(readRotary());
+  //Serial.print(analogRead());
   delay(100);
 #endif
   
@@ -148,10 +150,22 @@ uint8_t readBand(){
   int a;
   a=analogRead(bandInPin);
 #ifdef debug
-  Serial.println(a);
+  Serial.print("Aval:\t");
+  Serial.print(a);
 #endif  
   for (uint8_t i=0; i<(sizeof(bandValues)/sizeof(bandValues[0]));i++){
-    if (a<bandValues[i]) return i;
+    if (a<bandValues[i]) {
+#ifdef debug
+  Serial.print("\tBand: ");
+  Serial.println(i);
+#endif
+      return i;
+    }
   }
+#ifdef debug
+  Serial.print("\tBand: ");
+  Serial.println(255);
+#endif
+
   return 255;  
 }
