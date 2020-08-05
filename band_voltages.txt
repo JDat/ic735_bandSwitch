@@ -1,4 +1,4 @@
-Band				      Voltage		ADC value
+Band              Voltage   ADC value
 1.8 (160m)            7-8		884
 3.5 (80m)           6-6.5		692
 7 (40m)             5-5.5		528
