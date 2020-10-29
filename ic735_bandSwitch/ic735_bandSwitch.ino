@@ -39,7 +39,7 @@ int rotaryValues[]={rotaryVal0, rotaryVal1, rotaryVal2, rotaryVal3,
                     rotaryVal4, rotaryVal5, rotaryVal6, rotaryVal7, 
                     rotaryVal8, rotaryVal9, rotaryVal10, rotaryVal11};
 
-// ADC values for BAN input
+// ADC values for BAND input
 #define band30      50
 #define band10      230
 #define band15      340
@@ -47,8 +47,11 @@ int rotaryValues[]={rotaryVal0, rotaryVal1, rotaryVal2, rotaryVal3,
 #define band40      600
 #define band80      750
 #define band160     970
+
+// ADC BAND value array
 int bandValues[]={band30, band10, band15, band20, band40, band80, band160};
 
+// Logical relay numbers or easy to use in code, no need to change
 #define relay1    0
 #define relay2    1
 #define relay3    2
@@ -59,17 +62,25 @@ int bandValues[]={band30, band10, band15, band20, band40, band80, band160};
 
 #define tallyBit  7
 
-#define nc        255   // no connection nothig used for this band
+#define nc        255   // no connection, nothig used for this band
 
 //This is cruitical
 // in each element need to be relay number, who should be turned on
 //bands assinged in follwing order (numbers ar meters):
 //                   30m,10m,  15m,  20m,40m,  80m,160m
-uint8_t bandMatrix[]={nc,nc,relay3,relay2,nc,relay1,nc}; //  for analog band voltage
+// TODO: rewrite to more easy use and more logical code
+uint8_t bandMatrix[]={nc,     // 30m
+                      nc,     // 10m
+                      relay3, // 15m
+                      relay2, // 20m
+                      nc,     // 40m
+                      relay1, // 80m
+                      nc};    // 160m
 
 // each array element represent switch position
 // in each element need to be relay number, who should be turned on
-// element 0 is reserved for auto mode, do not use and leav as nc
+// element 0 is reserved for auto mode, do not use and leave as nc
+// TODO: rewrite as BAND names for easy of use
 uint8_t rotaryMatrix[]={nc,relay1,relay2,relay3};         // for rotary switch
 
 // macro hack
@@ -84,7 +95,7 @@ void setup() {
   }
 #endif
 
-  //Set pins to output
+  //Set relay pins to output
   for (uint8_t i=0; i<sizeof(pinBitArray); i++){
     pinMode(pinBitArray[i],OUTPUT);
   }
